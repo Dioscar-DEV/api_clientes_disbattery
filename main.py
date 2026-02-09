@@ -38,6 +38,12 @@ async def get_clientes():
             skipinitialspace=True
         )
         logger.info(f"CSV leído exitosamente. Filas: {len(df)}")
+
+        # Reemplazar valores NaN, inf, -inf con None para JSON
+        df = df.replace([float('inf'), float('-inf')], None)
+        df = df.fillna(None)
+
+        logger.info("Convirtiendo a JSON...")
         return df.to_dict(orient="records")
 
     except Exception as e:
