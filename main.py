@@ -41,7 +41,7 @@ async def get_clientes():
 
         # Reemplazar valores NaN, inf, -inf con None para JSON
         df = df.replace([float('inf'), float('-inf')], None)
-        df = df.fillna(None)
+        df = df.fillna(value=None)
 
         logger.info("Convirtiendo a JSON...")
         return df.to_dict(orient="records")
