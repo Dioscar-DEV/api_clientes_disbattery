@@ -52,4 +52,95 @@ async def get_clientes():
 
 @app.get("/")
 def read_root():
-    return {"message": "API de Clientes"}
+    return {
+        "message": "API de Clientes",
+        "version": "1.0",
+        "endpoints": {
+            "/clientes": "Obtener todos los clientes (lento - 12k registros)",
+            "/clientes/sede/{sede}": "Filtrar clientes por código de sucursal (1-16)",
+            "/clientes/estado/{estado}": "Filtrar clientes por estado",
+            "/sedes": "Listar todas las sucursales disponibles",
+            "/stats": "Estadísticas del dataset"
+        }
+    }
+
+@app.get("/sedes")
+async def get_sedes():
+    """
+    Retorna la lista de sucursales únicas disponibles
+    """
+    try:
+        df = pd.read_csv(CSV_PATH, encoding='utf-8', on_bad_lines='skip', engine='python')
+        sedes = sorted(df['co_sucu_in'].dropna().unique().astype(int).tolist())
+        return {
+            "total": len(sedes),
+            "sedes": sedes
+        }
+    except Exception as e:
+        logger.error(f"Error al obtener sedes: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+@app.get("/clientes/sede/{sede}")
+async def get_clientes_by_sede(sede: int):
+    """
+    Filtra clientes por código de sucursal
+    """
+    try:
+        logger.info(f"Filtrando clientes por sede: {sede}")
+        df = pd.read_csv(CSV_PATH, encoding='utf-8', on_bad_lines='skip', engine='python')
+
+        # Filtrar por sucursal
+        df_filtrado = df[df['co_sucu_in'] == sede]
+        logger.info(f"Clientes encontrados: {len(df_filtrado)}")
+
+        if len(df_filtrado) == 0:
+            return {"message": f"No se encontraron clientes para la sede {sede}", "data": []}
+
+        json_str = df_filtrado.to_json(orient="records", force_ascii=False)
+        return Response(content=json_str, media_type="application/json")
+
+    except Exception as e:
+        logger.error(f"Error al filtrar por sede: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+@app.get("/clientes/estado/{estado}")
+async def get_clientes_by_estado(estado: str):
+    """
+    Filtra clientes por estado
+    """
+    try:
+        logger.info(f"Filtrando clientes por estado: {estado}")
+        df = pd.read_csv(CSV_PATH, encoding='utf-8', on_bad_lines='skip', engine='python')
+
+        # Filtrar por estado (case-insensitive)
+        df_filtrado = df[df['estado'].str.contains(estado, case=False, na=False)]
+        logger.info(f"Clientes encontrados: {len(df_filtrado)}")
+
+        if len(df_filtrado) == 0:
+            return {"message": f"No se encontraron clientes en {estado}", "data": []}
+
+        json_str = df_filtrado.to_json(orient="records", force_ascii=False)
+        return Response(content=json_str, media_type="application/json")
+
+    except Exception as e:
+        logger.error(f"Error al filtrar por estado: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+@app.get("/stats")
+async def get_stats():
+    """
+    Retorna estadísticas del dataset
+    """
+    try:
+        df = pd.read_csv(CSV_PATH, encoding='utf-8', on_bad_lines='skip', engine='python')
+
+        return {
+            "total_clientes": len(df),
+            "sucursales": sorted(df['co_sucu_in'].dropna().unique().astype(int).tolist()),
+            "estados": sorted(df['estado'].dropna().unique().tolist()),
+            "ciudades_top_10": df['ciudad'].value_counts().head(10).to_dict(),
+            "tipos_cliente": df['tip_cli'].value_counts().to_dict()
+        }
+    except Exception as e:
+        logger.error(f"Error al obtener stats: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
