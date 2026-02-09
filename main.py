@@ -1,7 +1,12 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 import pandas as pd
 import os
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
@@ -13,11 +18,23 @@ async def get_clientes():
     """
     Reads the clientes.csv file and returns its content as a JSON response.
     """
-    if not os.path.exists(CSV_PATH):
-        return {"error": "El archivo de clientes no se encuentra."}
-    
-    df = pd.read_csv(CSV_PATH)
-    return df.to_dict(orient="records")
+    try:
+        logger.info(f"Intentando leer CSV desde: {CSV_PATH}")
+        logger.info(f"Directorio actual: {os.getcwd()}")
+        logger.info(f"Archivos en directorio: {os.listdir(os.path.dirname(__file__) or '.')}")
+
+        if not os.path.exists(CSV_PATH):
+            logger.error(f"CSV no encontrado en: {CSV_PATH}")
+            raise HTTPException(status_code=404, detail="El archivo de clientes no se encuentra.")
+
+        logger.info("CSV encontrado, leyendo...")
+        df = pd.read_csv(CSV_PATH, encoding='utf-8')
+        logger.info(f"CSV leído exitosamente. Filas: {len(df)}")
+        return df.to_dict(orient="records")
+
+    except Exception as e:
+        logger.error(f"Error al leer CSV: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error al procesar el archivo: {str(e)}")
 
 @app.get("/")
 def read_root():
