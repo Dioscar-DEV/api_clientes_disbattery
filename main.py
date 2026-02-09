@@ -67,14 +67,27 @@ def read_root():
 @app.get("/sedes")
 async def get_sedes():
     """
-    Retorna la lista de sucursales únicas disponibles
+    Retorna la lista de sucursales únicas disponibles con sus ubicaciones
     """
     try:
         df = pd.read_csv(CSV_PATH, encoding='utf-8', on_bad_lines='skip', engine='python')
-        sedes = sorted(df['co_sucu_in'].dropna().unique().astype(int).tolist())
+
+        # Crear mapeo de sede -> nombre/ciudad principal
+        sedes_info = []
+        for sede in sorted(df['co_sucu_in'].dropna().unique().astype(int)):
+            datos_sede = df[df['co_sucu_in'] == sede]
+            ciudad = datos_sede['ciudad'].mode()[0] if not datos_sede['ciudad'].mode().empty else 'Desconocida'
+            total_clientes = len(datos_sede)
+
+            sedes_info.append({
+                "codigo": int(sede),
+                "nombre": ciudad.strip().title(),
+                "total_clientes": total_clientes
+            })
+
         return {
-            "total": len(sedes),
-            "sedes": sedes
+            "total": len(sedes_info),
+            "sedes": sedes_info
         }
     except Exception as e:
         logger.error(f"Error al obtener sedes: {str(e)}")
@@ -134,10 +147,21 @@ async def get_stats():
     try:
         df = pd.read_csv(CSV_PATH, encoding='utf-8', on_bad_lines='skip', engine='python')
 
+        # Distribución por sede con nombres
+        sedes_dist = []
+        for sede in sorted(df['co_sucu_in'].dropna().unique().astype(int)):
+            datos_sede = df[df['co_sucu_in'] == sede]
+            ciudad = datos_sede['ciudad'].mode()[0] if not datos_sede['ciudad'].mode().empty else 'Desconocida'
+            sedes_dist.append({
+                "codigo": int(sede),
+                "nombre": ciudad.strip().title(),
+                "clientes": len(datos_sede)
+            })
+
         return {
             "total_clientes": len(df),
-            "sucursales": sorted(df['co_sucu_in'].dropna().unique().astype(int).tolist()),
-            "estados": sorted(df['estado'].dropna().unique().tolist()),
+            "total_sucursales": len(sedes_dist),
+            "sucursales": sedes_dist,
             "ciudades_top_10": df['ciudad'].value_counts().head(10).to_dict(),
             "tipos_cliente": df['tip_cli'].value_counts().to_dict()
         }
