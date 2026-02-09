@@ -28,7 +28,15 @@ async def get_clientes():
             raise HTTPException(status_code=404, detail="El archivo de clientes no se encuentra.")
 
         logger.info("CSV encontrado, leyendo...")
-        df = pd.read_csv(CSV_PATH, encoding='utf-8')
+        # Leer CSV con manejo de errores tolerante
+        df = pd.read_csv(
+            CSV_PATH,
+            encoding='utf-8',
+            on_bad_lines='skip',  # Saltar líneas problemáticas
+            engine='python',      # Motor más flexible
+            quoting=1,            # QUOTE_ALL
+            skipinitialspace=True
+        )
         logger.info(f"CSV leído exitosamente. Filas: {len(df)}")
         return df.to_dict(orient="records")
 
