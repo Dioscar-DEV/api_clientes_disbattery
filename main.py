@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 import pandas as pd
 import os
 import logging
@@ -39,14 +39,12 @@ async def get_clientes():
         )
         logger.info(f"CSV leído exitosamente. Filas: {len(df)}")
 
-        # Reemplazar valores NaN, inf, -inf con None para JSON
-        import numpy as np
-        df = df.replace([np.inf, -np.inf], np.nan)
-
         logger.info("Convirtiendo a JSON...")
-        # Convertir a dict reemplazando NaN con None
-        result = df.where(pd.notnull(df), None).to_dict(orient="records")
-        return result
+        # Usar to_json de pandas que maneja NaN correctamente
+        json_str = df.to_json(orient="records", force_ascii=False)
+
+        # Devolver como Response con el JSON string
+        return Response(content=json_str, media_type="application/json")
 
     except Exception as e:
         logger.error(f"Error al leer CSV: {str(e)}")
