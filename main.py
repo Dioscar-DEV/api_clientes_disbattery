@@ -3,6 +3,7 @@ from fastapi.responses import FileResponse, Response
 import pandas as pd
 import os
 import logging
+from mapeo_municipios import MAPEO_MUNICIPIOS
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -17,6 +18,7 @@ CIUDADES_PATH = os.path.join(os.path.dirname(__file__), "ciudades_asignadas.csv"
 def cargar_clientes_con_distribuidor():
     """
     Carga el CSV de clientes y hace merge con ciudades asignadas para obtener el distribuidor correcto
+    Usa mapeo de fallback para municipios comunes que no están en el CSV
     """
     # Leer clientes
     df_clientes = pd.read_csv(
@@ -47,8 +49,20 @@ def cargar_clientes_con_distribuidor():
         how='left'
     )
 
+    # FALLBACK: Asignar distribuidor usando mapeo manual para municipios sin match
+    def asignar_distribuidor_fallback(row):
+        if pd.isna(row['DISTRIBUIDOR']):
+            municipio_upper = str(row['ciudad']).strip().upper()
+            return MAPEO_MUNICIPIOS.get(municipio_upper, None)
+        return row['DISTRIBUIDOR']
+
+    df_merged['DISTRIBUIDOR'] = df_merged.apply(asignar_distribuidor_fallback, axis=1)
+
     # Limpiar columnas temporales
     df_merged = df_merged.drop(['municipio_norm', 'MUNICIPIO_norm'], axis=1)
+
+    logger.info(f"Clientes con distribuidor: {df_merged['DISTRIBUIDOR'].notna().sum()}")
+    logger.info(f"Clientes sin distribuidor: {df_merged['DISTRIBUIDOR'].isna().sum()}")
 
     return df_merged
 
