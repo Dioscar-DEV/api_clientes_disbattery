@@ -3,7 +3,7 @@ from fastapi.responses import FileResponse, Response
 import pandas as pd
 import os
 import logging
-from mapeo_municipios import MAPEO_ESTADOS
+from mapeo_municipios import MAPEO_ESTADOS, MAPEO_LUGARES
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -64,7 +64,11 @@ def cargar_clientes_con_distribuidor():
             # Asignar distribuidor según MAPEO_ESTADOS
             return MAPEO_ESTADOS.get(estado, None)
 
-        # Fallback: el campo 'ciudad' podría ser directamente un nombre de estado
+        # Fallback 1: buscar directamente en MAPEO_LUGARES
+        if lugar in MAPEO_LUGARES:
+            return MAPEO_LUGARES[lugar]
+
+        # Fallback 2: el campo 'ciudad' podría ser directamente un nombre de estado
         return MAPEO_ESTADOS.get(lugar, None)
 
     df_clientes['DISTRIBUIDOR'] = df_clientes.apply(asignar_distribuidor, axis=1)
