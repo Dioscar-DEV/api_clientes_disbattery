@@ -3,7 +3,7 @@ from fastapi.responses import FileResponse, Response
 import pandas as pd
 import os
 import logging
-from mapeo_municipios import MAPEO_MUNICIPIOS
+from mapeo_municipios import MAPEO_ESTADOS
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -17,8 +17,8 @@ CIUDADES_PATH = os.path.join(os.path.dirname(__file__), "ciudades_asignadas.csv"
 
 def cargar_clientes_con_distribuidor():
     """
-    Carga el CSV de clientes y hace merge con ciudades asignadas para obtener el distribuidor correcto
-    Usa mapeo de fallback para municipios comunes que no están en el CSV
+    Asigna distribuidores a clientes basándose en el ESTADO
+    Usa CSV de ciudades_asignadas como fuente principal y mapeo manual como fallback
     """
     # Leer clientes
     df_clientes = pd.read_csv(
@@ -30,17 +30,44 @@ def cargar_clientes_con_distribuidor():
         skipinitialspace=True
     )
 
-    # Leer asignación de ciudades (tiene: ESTADO, CIUDAD, DISTRIBUIDOR, PARROQUIA, MUNICIPIO)
+    # Leer asignación de ciudades para obtener mapeo ESTADO → DISTRIBUIDOR
     df_ciudades = pd.read_csv(CIUDADES_PATH, encoding='utf-8')
 
-    # En el CSV de clientes, la columna 'ciudad' en realidad contiene el MUNICIPIO
-    # Normalizar para el merge
+    # Crear mapeo ESTADO → DISTRIBUIDOR desde el CSV
+    # Tomar el primer distribuidor que aparece para cada estado
+    estado_dist_map = df_ciudades.groupby('ESTADO')['DISTRIBUIDOR'].first().to_dict()
+
+    # Normalizar estados para el mapeo
+    estado_dist_norm = {}
+    for estado, dist in estado_dist_map.items():
+        estado_norm = str(estado).strip().upper()
+        estado_dist_norm[estado_norm] = dist
+
+    # Función para asignar distribuidor por estado
+    def asignar_por_estado(row):
+        # Intentar obtener el estado del CSV de ciudades (columna estado_real si existe)
+        if 'estado_real' in row and pd.notna(row['estado_real']):
+            estado = str(row['estado_real']).strip().upper()
+        else:
+            # Usar columna estado del cliente
+            estado = str(row.get('estado', '')).strip().upper()
+
+        # Buscar en mapeo del CSV
+        if estado in estado_dist_norm:
+            return estado_dist_norm[estado]
+
+        # FALLBACK: Buscar en mapeo manual
+        if estado in MAPEO_ESTADOS:
+            return MAPEO_ESTADOS[estado]
+
+        return None
+
+    # Primero intentar merge por MUNICIPIO para obtener estado_real
     df_clientes['municipio_norm'] = df_clientes['ciudad'].astype(str).str.strip().str.upper()
     df_ciudades['MUNICIPIO_norm'] = df_ciudades['MUNICIPIO'].astype(str).str.strip().str.upper()
 
-    # Hacer merge por municipio
     df_merged = df_clientes.merge(
-        df_ciudades[['MUNICIPIO_norm', 'DISTRIBUIDOR', 'CIUDAD', 'ESTADO']].rename(columns={
+        df_ciudades[['MUNICIPIO_norm', 'CIUDAD', 'ESTADO']].rename(columns={
             'CIUDAD': 'ciudad_real',
             'ESTADO': 'estado_real'
         }),
@@ -49,14 +76,8 @@ def cargar_clientes_con_distribuidor():
         how='left'
     )
 
-    # FALLBACK: Asignar distribuidor usando mapeo manual para municipios sin match
-    def asignar_distribuidor_fallback(row):
-        if pd.isna(row['DISTRIBUIDOR']):
-            municipio_upper = str(row['ciudad']).strip().upper()
-            return MAPEO_MUNICIPIOS.get(municipio_upper, None)
-        return row['DISTRIBUIDOR']
-
-    df_merged['DISTRIBUIDOR'] = df_merged.apply(asignar_distribuidor_fallback, axis=1)
+    # Asignar distribuidor por estado
+    df_merged['DISTRIBUIDOR'] = df_merged.apply(asignar_por_estado, axis=1)
 
     # Limpiar columnas temporales
     df_merged = df_merged.drop(['municipio_norm', 'MUNICIPIO_norm'], axis=1)

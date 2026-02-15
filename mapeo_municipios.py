@@ -1,51 +1,42 @@
-# Mapeo de municipios a distribuidores
+# Mapeo de ESTADOS a distribuidores
 # Basado en la página oficial: https://disbatterylubricantes.com/distibuidores/
 
-MAPEO_MUNICIPIOS = {
-    # Zona Oriente - 🌅 Oceano Pacifico 🟧 (Disbattery Lubricantes)
-    'BARCELONA': '🌅 Oceano Pacifico 🟧',
-    'PUERTO LA CRUZ': '🌅 Oceano Pacifico 🟧',
-    'MATURIN': '🌅 Oceano Pacifico 🟧',
-    'MATURÍN': '🌅 Oceano Pacifico 🟧',
-    'GUAYANA': '🌅 Oceano Pacifico 🟧',
-    'EL TIGRE': '🌅 Oceano Pacifico 🟧',
-    'PORLAMAR': '🌅 Oceano Pacifico 🟧',
-    'BOLIVAR': '🌅 Oceano Pacifico 🟧',
-    'BOLÍVAR': '🌅 Oceano Pacifico 🟧',
-
-    # Zona Metropolitana y Centro - 🔷 Grupo Disbattery 🟦
+MAPEO_ESTADOS = {
+    # 🔷 Grupo Disbattery 🟦 - Zona Metropolitana y Centro
+    'AMAZONAS': '🔷 Grupo Disbattery 🟦',
+    'ARAGUA': '🔷 Grupo Disbattery 🟦',
     'DISTRITO CAPITAL': '🔷 Grupo Disbattery 🟦',
-    'LIBERTADOR': '🔷 Grupo Disbattery 🟦',
-    'CHACAO': '🔷 Grupo Disbattery 🟦',
-    'BARUTA': '🔷 Grupo Disbattery 🟦',
-    'SUCRE': '🔷 Grupo Disbattery 🟦',
-    'VALENCIA': '🔷 Grupo Disbattery 🟦',
-    'MARIO BRICEÑO IRAGORRY': '🔷 Grupo Disbattery 🟦',
-    'SANTIAGO MARIÑO': '🔷 Grupo Disbattery 🟦',
+    'FALCÓN': '🔷 Grupo Disbattery 🟦',
+    'FALCON': '🔷 Grupo Disbattery 🟦',
+    'LA GUAIRA': '🔷 Grupo Disbattery 🟦',
+    'LARA': '🔷 Grupo Disbattery 🟦',
+    'MIRANDA': '🔷 Grupo Disbattery 🟦',
+    'PORTUGUESA': '🔷 Grupo Disbattery 🟦',
+    'YARACUY': '🔷 Grupo Disbattery 🟦',
 
-    # Zona Centro - ✨Blitz 2000🔵
-    'CALABOZO': '✨Blitz 2000🔵',
-    'SAN FERNANDO DE APURE': '✨Blitz 2000🔵',
-    'VALLE DE LA PASCUA': '✨Blitz 2000🔵',
-    'SAN DIEGO': '✨Blitz 2000🔵',
-    'NAGUANAGUA': '✨Blitz 2000🔵',
-    'TOCUYITO': '✨Blitz 2000🔵',
-    'GUACARA': '✨Blitz 2000🔵',
-    'PAEZ': '✨Blitz 2000🔵',
+    # 🌅 Oceano Pacifico 🟧 - Zona Oriente (Disbattery Lubricantes)
+    'ANZOÁTEGUI': '🌅 Oceano Pacifico 🟧',
+    'ANZOATEGUI': '🌅 Oceano Pacifico 🟧',
+    'BOLÍVAR': '🌅 Oceano Pacifico 🟧',
+    'BOLIVAR': '🌅 Oceano Pacifico 🟧',
+    'DELTA AMACURO': '🌅 Oceano Pacifico 🟧',
+    'MONAGAS': '🌅 Oceano Pacifico 🟧',
+    'NUEVA ESPARTA': '🌅 Oceano Pacifico 🟧',
+    'SUCRE': '🌅 Oceano Pacifico 🟧',
 
-    # Zona Occidente - 🏆 Grupo Victoria 🟡
-    'SAN CRISTOBAL': '🏆 Grupo Victoria 🟡',
-    'SAN CRISTÓBAL': '🏆 Grupo Victoria 🟡',
-    'MERIDA': '🏆 Grupo Victoria 🟡',
-    'MÉRIDA': '🏆 Grupo Victoria 🟡',
-    'MARACAIBO': '🏆 Grupo Victoria 🟡',
+    # ✨Blitz 2000🔵 - Zona Centro
+    'APURE': '✨Blitz 2000🔵',
+    'CARABOBO': '✨Blitz 2000🔵',
+    'COJEDES': '✨Blitz 2000🔵',
+    'GUÁRICO': '✨Blitz 2000🔵',
+    'GUARICO': '✨Blitz 2000🔵',
+
+    # 🏆 Grupo Victoria 🟡 - Zona Occidente
     'BARINAS': '🏆 Grupo Victoria 🟡',
-    'VALERA': '🏆 Grupo Victoria 🟡',
+    'MÉRIDA': '🏆 Grupo Victoria 🟡',
+    'MERIDA': '🏆 Grupo Victoria 🟡',
+    'TÁCHIRA': '🏆 Grupo Victoria 🟡',
+    'TACHIRA': '🏆 Grupo Victoria 🟡',
     'TRUJILLO': '🏆 Grupo Victoria 🟡',
-
-    # Casos especiales
-    'JOSE FELIX RIBAS': '🔷 Grupo Disbattery 🟦',
-    'JOSÉ FÉLIX RIBAS': '🔷 Grupo Disbattery 🟦',
-    'IRIBARREN': '🔷 Grupo Disbattery 🟦',
-    'GIRARDOT': '🔷 Grupo Disbattery 🟦',
+    'ZULIA': '🏆 Grupo Victoria 🟡',
 }
