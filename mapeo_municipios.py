@@ -178,4 +178,131 @@ MAPEO_LUGARES = {
 
     # Barinas → 🏆 Grupo Victoria 🟡
     'BARINAS': '🏆 Grupo Victoria 🟡',
+
+    # === Municipios/ciudades adicionales encontradas en clientes sin asignar ===
+
+    # Carabobo → ✨Blitz 2000🔵
+    'MORON': '✨Blitz 2000🔵',
+    'MORÓN': '✨Blitz 2000🔵',
+    'GÜIGÜE': '✨Blitz 2000🔵',
+    'GUIGUE': '✨Blitz 2000🔵',
+    'MONTALBAN': '✨Blitz 2000🔵',
+    'MONTALBÁN': '✨Blitz 2000🔵',
+    'CARLOS ARVELO': '✨Blitz 2000🔵',
+
+    # Anzoátegui → 🌅 Oceano Pacifico 🟧
+    'PARIAGUAN': '🌅 Oceano Pacifico 🟧',
+    'PARIAGUÁN': '🌅 Oceano Pacifico 🟧',
+    'PUERTO PIRITU': '🌅 Oceano Pacifico 🟧',
+    'PUERTO PÍRITU': '🌅 Oceano Pacifico 🟧',
+    'SAN JOSE DE GUANIPA': '🌅 Oceano Pacifico 🟧',
+    'SIMON RODRIGUEZ': '🌅 Oceano Pacifico 🟧',
+    'SIMÓN RODRÍGUEZ': '🌅 Oceano Pacifico 🟧',
+    'PIRITU': '🌅 Oceano Pacifico 🟧',
+    'PÍRITU': '🌅 Oceano Pacifico 🟧',
+    'PEDRO MARIA FREITES': '🌅 Oceano Pacifico 🟧',
+
+    # Nueva Esparta → 🌅 Oceano Pacifico 🟧
+    'PARAGUACHI': '🌅 Oceano Pacifico 🟧',
+    'LOS ROBLES': '🌅 Oceano Pacifico 🟧',
+    'BOCA DEL RIO': '🌅 Oceano Pacifico 🟧',
+    'DIAZ': '🌅 Oceano Pacifico 🟧',
+    'GARCIA': '🌅 Oceano Pacifico 🟧',
+
+    # Miranda → 🔷 Grupo Disbattery 🟦
+    'BRION': '🔷 Grupo Disbattery 🟦',
+    'BRIÓN': '🔷 Grupo Disbattery 🟦',
+    'SEBASTIAN FRANCISCO DE MIRANDA': '🔷 Grupo Disbattery 🟦',
+    'ANDRES BELLO': '🔷 Grupo Disbattery 🟦',
+    'ANDRÉS BELLO': '🔷 Grupo Disbattery 🟦',
+    'GUARENAS': '🔷 Grupo Disbattery 🟦',
+    'GUATIRE': '🔷 Grupo Disbattery 🟦',
+
+    # Aragua → 🔷 Grupo Disbattery 🟦
+    'JOSE RAFAEL REVENGA': '🔷 Grupo Disbattery 🟦',
+    'JOSÉ RAFAEL REVENGA': '🔷 Grupo Disbattery 🟦',
+
+    # Falcón → 🔷 Grupo Disbattery 🟦
+    'FEDERACION': '🔷 Grupo Disbattery 🟦',
+    'FEDERACIÓN': '🔷 Grupo Disbattery 🟦',
+
+    # Guárico → ✨Blitz 2000🔵
+    'JOSE TADEO MONAGAS': '✨Blitz 2000🔵',
+    'JOSÉ TADEO MONAGAS': '✨Blitz 2000🔵',
+
+    # Táchira → 🏆 Grupo Victoria 🟡
+    'TARIBA': '🏆 Grupo Victoria 🟡',
+    'LA FRIA': '🏆 Grupo Victoria 🟡',
+    'LA FRÍA': '🏆 Grupo Victoria 🟡',
+    'SAN ANTONIO': '🏆 Grupo Victoria 🟡',
+    'COLON': '🏆 Grupo Victoria 🟡',
+    'COLÓN': '🏆 Grupo Victoria 🟡',
+
+    # Barinas → 🏆 Grupo Victoria 🟡
+    'SOCOPO': '🏆 Grupo Victoria 🟡',
+
+    # Trujillo → 🏆 Grupo Victoria 🟡
+    'BOCONO': '🏆 Grupo Victoria 🟡',
+    'BOCONÓ': '🏆 Grupo Victoria 🟡',
+
+    # Zulia → 🏆 Grupo Victoria 🟡
+    'BARALT MENE GRANDE': '🏆 Grupo Victoria 🟡',
+    'OJEDA': '🏆 Grupo Victoria 🟡',
+    'MACHIQUES DE PERIJA': '🏆 Grupo Victoria 🟡',
+    'MACHIQUES DE PERIJÁ': '🏆 Grupo Victoria 🟡',
+    'CONCEPCION': '🏆 Grupo Victoria 🟡',
+    'CONCEPCIÓN': '🏆 Grupo Victoria 🟡',
 }
+
+# Palabras clave en direcciones para identificar estados
+# Usado cuando ciudad es "0" o vacío pero direc1 tiene información
+ESTADOS_EN_DIRECCION = [
+    ('MONAGAS', 'MONAGAS'),
+    ('NUEVA ESPARTA', 'NUEVA ESPARTA'),
+    ('DELTA AMACURO', 'DELTA AMACURO'),
+    ('DISTRITO CAPITAL', 'DISTRITO CAPITAL'),
+    ('DISTRITO FEDERAL', 'DISTRITO CAPITAL'),
+    ('CARABOBO', 'CARABOBO'),
+    ('ARAGUA', 'ARAGUA'),
+    ('MIRANDA', 'MIRANDA'),
+    ('FALCON', 'FALCON'),
+    ('FALCÓN', 'FALCON'),
+    ('GUARICO', 'GUARICO'),
+    ('GUÁRICO', 'GUARICO'),
+    ('PORTUGUESA', 'PORTUGUESA'),
+    ('YARACUY', 'YARACUY'),
+    ('LARA', 'LARA'),
+    ('ANZOATEGUI', 'ANZOATEGUI'),
+    ('ANZOÁTEGUI', 'ANZOATEGUI'),
+    ('BOLIVAR', 'BOLIVAR'),
+    ('BOLÍVAR', 'BOLIVAR'),
+    ('SUCRE', 'SUCRE'),
+    ('TACHIRA', 'TACHIRA'),
+    ('TÁCHIRA', 'TACHIRA'),
+    ('MERIDA', 'MERIDA'),
+    ('MÉRIDA', 'MERIDA'),
+    ('ZULIA', 'ZULIA'),
+    ('TRUJILLO', 'TRUJILLO'),
+    ('BARINAS', 'BARINAS'),
+    ('APURE', 'APURE'),
+    ('COJEDES', 'COJEDES'),
+    ('AMAZONAS', 'AMAZONAS'),
+    ('LA GUAIRA', 'LA GUAIRA'),
+    ('VARGAS', 'LA GUAIRA'),
+    ('CARACAS', 'DISTRITO CAPITAL'),
+    ('MARACAY', 'ARAGUA'),
+    ('VALENCIA', 'CARABOBO'),
+    ('BARQUISIMETO', 'LARA'),
+    ('MARACAIBO', 'ZULIA'),
+    ('MATURIN', 'MONAGAS'),
+    ('MATURÍN', 'MONAGAS'),
+    ('PORLAMAR', 'NUEVA ESPARTA'),
+    ('MARGARITA', 'NUEVA ESPARTA'),
+    ('BARCELONA', 'ANZOATEGUI'),
+    ('PUERTO LA CRUZ', 'ANZOATEGUI'),
+    ('CALABOZO', 'GUARICO'),
+    ('SAN CRISTOBAL', 'TACHIRA'),
+    ('SAN CRISTÓBAL', 'TACHIRA'),
+    ('GUAYANA', 'BOLIVAR'),
+    ('PUERTO ORDAZ', 'BOLIVAR'),
+]

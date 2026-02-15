@@ -3,7 +3,7 @@ from fastapi.responses import FileResponse, Response
 import pandas as pd
 import os
 import logging
-from mapeo_municipios import MAPEO_ESTADOS, MAPEO_LUGARES
+from mapeo_municipios import MAPEO_ESTADOS, MAPEO_LUGARES, ESTADOS_EN_DIRECCION
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -54,22 +54,30 @@ def cargar_clientes_con_distribuidor():
         # Tomar el campo 'ciudad' del cliente (contiene municipio o ciudad)
         lugar = str(row.get('ciudad', '')).strip().upper()
 
-        if not lugar or lugar in ('0', 'NAN', 'NONE', ''):
-            return None
+        if lugar and lugar not in ('0', 'NAN', 'NONE', ''):
+            # Buscar el ESTADO de este lugar en nuestro diccionario
+            estado = lugar_a_estado.get(lugar, None)
+            if estado:
+                dist = MAPEO_ESTADOS.get(estado, None)
+                if dist:
+                    return dist
 
-        # Buscar el ESTADO de este lugar en nuestro diccionario
-        estado = lugar_a_estado.get(lugar, None)
+            # Fallback 1: buscar directamente en MAPEO_LUGARES
+            if lugar in MAPEO_LUGARES:
+                return MAPEO_LUGARES[lugar]
 
-        if estado:
-            # Asignar distribuidor según MAPEO_ESTADOS
-            return MAPEO_ESTADOS.get(estado, None)
+            # Fallback 2: el campo 'ciudad' podría ser directamente un nombre de estado
+            if lugar in MAPEO_ESTADOS:
+                return MAPEO_ESTADOS[lugar]
 
-        # Fallback 1: buscar directamente en MAPEO_LUGARES
-        if lugar in MAPEO_LUGARES:
-            return MAPEO_LUGARES[lugar]
+        # Fallback 3: buscar palabras clave de estados en la dirección
+        direc = str(row.get('direc1', '')).strip().upper()
+        if direc and direc not in ('NAN', ''):
+            for palabra, estado_key in ESTADOS_EN_DIRECCION:
+                if palabra in direc:
+                    return MAPEO_ESTADOS.get(estado_key, None)
 
-        # Fallback 2: el campo 'ciudad' podría ser directamente un nombre de estado
-        return MAPEO_ESTADOS.get(lugar, None)
+        return None
 
     df_clientes['DISTRIBUIDOR'] = df_clientes.apply(asignar_distribuidor, axis=1)
 
