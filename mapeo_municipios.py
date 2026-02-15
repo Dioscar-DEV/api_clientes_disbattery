@@ -252,6 +252,36 @@ MAPEO_LUGARES = {
     'MACHIQUES DE PERIJÁ': '🏆 Grupo Victoria 🟡',
     'CONCEPCION': '🏆 Grupo Victoria 🟡',
     'CONCEPCIÓN': '🏆 Grupo Victoria 🟡',
+
+    # === Municipios/ciudades obvios agregados manualmente ===
+
+    # Nueva Esparta → 🌅 Oceano Pacifico 🟧
+    'JUAN GRIEGO': '🌅 Oceano Pacifico 🟧',
+    'JAUN GRIEGO': '🌅 Oceano Pacifico 🟧',  # typo común
+    'PLAYA EL AGUA': '🌅 Oceano Pacifico 🟧',
+    'GUATAMARE': '🌅 Oceano Pacifico 🟧',
+    'BOCA DE RIO': '🌅 Oceano Pacifico 🟧',
+    'MACANAO': '🌅 Oceano Pacifico 🟧',
+    'ANTOLIN DEL CAMPO': '🌅 Oceano Pacifico 🟧',
+    'ANTOLÍN DEL CAMPO': '🌅 Oceano Pacifico 🟧',
+    'GOMEZ': '🌅 Oceano Pacifico 🟧',
+    'GÓMEZ': '🌅 Oceano Pacifico 🟧',
+
+    # Bolívar → 🌅 Oceano Pacifico 🟧
+    'GUAYANA ´': '🌅 Oceano Pacifico 🟧',  # con acento suelto
+    'GUYANA': '🌅 Oceano Pacifico 🟧',
+    'SAN FELIX': '🌅 Oceano Pacifico 🟧',
+    'SAN FÉLIX': '🌅 Oceano Pacifico 🟧',
+
+    # Sucre → 🌅 Oceano Pacifico 🟧
+    'RIO CARIBE': '🌅 Oceano Pacifico 🟧',
+    'RÍO CARIBE': '🌅 Oceano Pacifico 🟧',
+    'BERMUDEZ': '🌅 Oceano Pacifico 🟧',
+    'BERMÚDEZ': '🌅 Oceano Pacifico 🟧',
+
+    # Guárico → ✨Blitz 2000🔵
+    'SOMBRERO': '✨Blitz 2000🔵',
+    'EL SOMBRERO': '✨Blitz 2000🔵',
 }
 
 # Palabras clave en direcciones para identificar estados
