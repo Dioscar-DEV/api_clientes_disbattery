@@ -14,6 +14,7 @@ app = FastAPI()
 # Define the path to the CSV files
 CSV_PATH = os.path.join(os.path.dirname(__file__), "clientes.csv")
 CIUDADES_PATH = os.path.join(os.path.dirname(__file__), "ciudades_asignadas.csv")
+CORRECCION_PATH = os.path.join(os.path.dirname(__file__), "clientes_correccion.csv")
 
 def cargar_clientes_con_distribuidor():
     """
@@ -34,6 +35,16 @@ def cargar_clientes_con_distribuidor():
 
     # Leer asignación de ciudades
     df_ciudades = pd.read_csv(CIUDADES_PATH, encoding='utf-8')
+
+    # Leer correcciones manuales (clientes con estado asignado manualmente)
+    correccion_estado = {}
+    if os.path.exists(CORRECCION_PATH):
+        df_correccion = pd.read_csv(CORRECCION_PATH, encoding='utf-8')
+        for _, row in df_correccion.iterrows():
+            co_cli = str(row.get('co_cli', '')).strip()
+            estado = str(row.get('estado', '')).strip().upper()
+            if co_cli and estado and estado not in ('NAN', 'NONE', ''):
+                correccion_estado[co_cli] = estado
 
     # Crear un diccionario exhaustivo: nombre_lugar → ESTADO
     # Incluye TANTO ciudades COMO municipios del CSV
@@ -76,6 +87,14 @@ def cargar_clientes_con_distribuidor():
             for palabra, estado_key in ESTADOS_EN_DIRECCION:
                 if palabra in direc:
                     return MAPEO_ESTADOS.get(estado_key, None)
+
+        # Fallback 4: correcciones manuales por co_cli
+        co_cli = str(row.get('co_cli', '')).strip()
+        if co_cli in correccion_estado:
+            estado_corr = correccion_estado[co_cli]
+            dist = MAPEO_ESTADOS.get(estado_corr, None)
+            if dist:
+                return dist
 
         return None
 
