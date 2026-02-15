@@ -28,25 +28,27 @@ def cargar_clientes_con_distribuidor():
         skipinitialspace=True
     )
 
-    # Leer asignación de ciudades
+    # Leer asignación de ciudades (tiene: ESTADO, CIUDAD, DISTRIBUIDOR, PARROQUIA, MUNICIPIO)
     df_ciudades = pd.read_csv(CIUDADES_PATH, encoding='utf-8')
 
-    # Normalizar nombres de ciudades y estados para el merge
-    df_clientes['ciudad_norm'] = df_clientes['ciudad'].str.strip().str.upper()
-    df_clientes['estado_norm'] = df_clientes['estado'].str.strip().str.upper()
-    df_ciudades['CIUDAD_norm'] = df_ciudades['CIUDAD'].str.strip().str.upper()
-    df_ciudades['ESTADO_norm'] = df_ciudades['ESTADO'].str.strip().str.upper()
+    # En el CSV de clientes, la columna 'ciudad' en realidad contiene el MUNICIPIO
+    # Normalizar para el merge
+    df_clientes['municipio_norm'] = df_clientes['ciudad'].astype(str).str.strip().str.upper()
+    df_ciudades['MUNICIPIO_norm'] = df_ciudades['MUNICIPIO'].astype(str).str.strip().str.upper()
 
-    # Hacer merge por ciudad y estado
+    # Hacer merge por municipio
     df_merged = df_clientes.merge(
-        df_ciudades[['CIUDAD_norm', 'ESTADO_norm', 'DISTRIBUIDOR']],
-        left_on=['ciudad_norm', 'estado_norm'],
-        right_on=['CIUDAD_norm', 'ESTADO_norm'],
+        df_ciudades[['MUNICIPIO_norm', 'DISTRIBUIDOR', 'CIUDAD', 'ESTADO']].rename(columns={
+            'CIUDAD': 'ciudad_real',
+            'ESTADO': 'estado_real'
+        }),
+        left_on='municipio_norm',
+        right_on='MUNICIPIO_norm',
         how='left'
     )
 
     # Limpiar columnas temporales
-    df_merged = df_merged.drop(['ciudad_norm', 'estado_norm', 'CIUDAD_norm', 'ESTADO_norm'], axis=1)
+    df_merged = df_merged.drop(['municipio_norm', 'MUNICIPIO_norm'], axis=1)
 
     return df_merged
 
