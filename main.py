@@ -17,8 +17,10 @@ CIUDADES_PATH = os.path.join(os.path.dirname(__file__), "ciudades_asignadas.csv"
 
 def cargar_clientes_con_distribuidor():
     """
-    Asigna distribuidores a clientes basándose en el ESTADO
-    Usa CSV de ciudades_asignadas como fuente principal y mapeo manual como fallback
+    Asigna distribuidores a clientes basándose en el ESTADO.
+    1. Busca el municipio/ciudad del cliente en el CSV de ciudades_asignadas
+    2. Obtiene el ESTADO correspondiente
+    3. Asigna el distribuidor según MAPEO_ESTADOS
     """
     # Leer clientes
     df_clientes = pd.read_csv(
@@ -30,62 +32,47 @@ def cargar_clientes_con_distribuidor():
         skipinitialspace=True
     )
 
-    # Leer asignación de ciudades para obtener mapeo ESTADO → DISTRIBUIDOR
+    # Leer asignación de ciudades
     df_ciudades = pd.read_csv(CIUDADES_PATH, encoding='utf-8')
 
-    # Crear mapeo ESTADO → DISTRIBUIDOR desde el CSV
-    # Tomar el primer distribuidor que aparece para cada estado
-    estado_dist_map = df_ciudades.groupby('ESTADO')['DISTRIBUIDOR'].first().to_dict()
+    # Crear un diccionario exhaustivo: nombre_lugar → ESTADO
+    # Incluye TANTO ciudades COMO municipios del CSV
+    lugar_a_estado = {}
 
-    # Normalizar estados para el mapeo
-    estado_dist_norm = {}
-    for estado, dist in estado_dist_map.items():
-        estado_norm = str(estado).strip().upper()
-        estado_dist_norm[estado_norm] = dist
+    for _, row in df_ciudades.iterrows():
+        estado = str(row['ESTADO']).strip().upper()
+        ciudad = str(row['CIUDAD']).strip().upper()
+        municipio = str(row['MUNICIPIO']).strip().upper()
 
-    # Función para asignar distribuidor por estado
-    def asignar_por_estado(row):
-        # Intentar obtener el estado del CSV de ciudades (columna estado_real si existe)
-        if 'estado_real' in row and pd.notna(row['estado_real']):
-            estado = str(row['estado_real']).strip().upper()
-        else:
-            # Usar columna estado del cliente
-            estado = str(row.get('estado', '')).strip().upper()
+        if ciudad and ciudad != 'NAN':
+            lugar_a_estado[ciudad] = estado
+        if municipio and municipio != 'NAN':
+            lugar_a_estado[municipio] = estado
 
-        # Buscar en mapeo del CSV
-        if estado in estado_dist_norm:
-            return estado_dist_norm[estado]
+    # Asignar distribuidor a cada cliente
+    def asignar_distribuidor(row):
+        # Tomar el campo 'ciudad' del cliente (contiene municipio o ciudad)
+        lugar = str(row.get('ciudad', '')).strip().upper()
 
-        # FALLBACK: Buscar en mapeo manual
-        if estado in MAPEO_ESTADOS:
-            return MAPEO_ESTADOS[estado]
+        if not lugar or lugar in ('0', 'NAN', 'NONE', ''):
+            return None
 
-        return None
+        # Buscar el ESTADO de este lugar en nuestro diccionario
+        estado = lugar_a_estado.get(lugar, None)
 
-    # Primero intentar merge por MUNICIPIO para obtener estado_real
-    df_clientes['municipio_norm'] = df_clientes['ciudad'].astype(str).str.strip().str.upper()
-    df_ciudades['MUNICIPIO_norm'] = df_ciudades['MUNICIPIO'].astype(str).str.strip().str.upper()
+        if estado:
+            # Asignar distribuidor según MAPEO_ESTADOS
+            return MAPEO_ESTADOS.get(estado, None)
 
-    df_merged = df_clientes.merge(
-        df_ciudades[['MUNICIPIO_norm', 'CIUDAD', 'ESTADO']].rename(columns={
-            'CIUDAD': 'ciudad_real',
-            'ESTADO': 'estado_real'
-        }),
-        left_on='municipio_norm',
-        right_on='MUNICIPIO_norm',
-        how='left'
-    )
+        # Fallback: el campo 'ciudad' podría ser directamente un nombre de estado
+        return MAPEO_ESTADOS.get(lugar, None)
 
-    # Asignar distribuidor por estado
-    df_merged['DISTRIBUIDOR'] = df_merged.apply(asignar_por_estado, axis=1)
+    df_clientes['DISTRIBUIDOR'] = df_clientes.apply(asignar_distribuidor, axis=1)
 
-    # Limpiar columnas temporales
-    df_merged = df_merged.drop(['municipio_norm', 'MUNICIPIO_norm'], axis=1)
+    logger.info(f"Clientes con distribuidor: {df_clientes['DISTRIBUIDOR'].notna().sum()}")
+    logger.info(f"Clientes sin distribuidor: {df_clientes['DISTRIBUIDOR'].isna().sum()}")
 
-    logger.info(f"Clientes con distribuidor: {df_merged['DISTRIBUIDOR'].notna().sum()}")
-    logger.info(f"Clientes sin distribuidor: {df_merged['DISTRIBUIDOR'].isna().sum()}")
-
-    return df_merged
+    return df_clientes
 
 @app.get("/clientes")
 async def get_clientes():
